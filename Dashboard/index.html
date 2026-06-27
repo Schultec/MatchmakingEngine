@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matchmaking Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0f1c;
+            --surface: #0f1929;
+            --border: #1e3a5f;
+            --accent: #00b4d8;
+            --accent-glow: rgba(0, 180, 216, 0.12);
+            --text: #cdd9e5;
+            --text-muted: #4d6380;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.4); }
+            50% { opacity: 0.5; box-shadow: 0 0 0 6px rgba(0, 180, 216, 0); }
+        }
+
+        h1 {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        h1 span { color: var(--accent); }
+
+        .connection-status {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: 2px solid var(--accent);
+            padding: 20px;
+        }
+
+        .card-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text);
+            transition: color 0.2s;
+        }
+
+        .card-value.flash { color: var(--accent); }
+
+        .middle {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+
+        .panel-title {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            text-align: left;
+            color: var(--text-muted);
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+            font-weight: 400;
+        }
+
+        td {
+            padding: 8px 0;
+            font-size: 12px;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.4);
+        }
+
+        td:last-child {
+            color: var(--accent);
+            text-align: right;
+        }
+
+        .chart-wrap {
+            position: relative;
+            height: 200px;
+        }
+
+        .pairings {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+
+        .pairing-header, .pairing-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 80px 80px 80px 100px;
+            gap: 8px;
+            padding: 8px 0;
+            font-size: 11px;
+            align-items: center;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.4);
+        }
+
+        .pairing-header {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .pairing-row { animation: slideIn 0.3s ease; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .pill {
+            font-size: 10px;
+            padding: 2px 8px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="live-dot"></div>
+    <h1><span>MATCHMAKING</span> ENGINE MONITOR</h1>
+    <div class="connection-status" id="status">connecting...</div>
+</header>
+
+<div class="cards">
+    <div class="card">
+        <div class="card-label">Total Matches</div>
+        <div class="card-value" id="total-matches">0</div>
+    </div>
+    <div class="card">
+        <div class="card-label">Matches / Sec</div>
+        <div class="card-value" id="matches-sec">0.00</div>
+    </div>
+    <div class="card">
+        <div class="card-label">Avg Elo Diff</div>
+        <div class="card-value" id="avg-elo">0.0</div>
+    </div>
+    <div class="card">
+        <div class="card-label">Avg Wait (s)</div>
+        <div class="card-value" id="avg-wait">0.0</div>
+    </div>
+</div>
+
+<div class="middle">
+    <div class="panel">
+        <div class="panel-title">Queue Depth by Region</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Region</th>
+                    <th style="text-align:right">Players</th>
+                </tr>
+            </thead>
+            <tbody id="region-table"></tbody>
+        </table>
+    </div>
+
+    <div class="panel">
+        <div class="panel-title">Avg Elo Diff Over Time</div>
+        <div class="chart-wrap">
+            <canvas id="elo-chart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="pairings">
+    <div class="panel-title">Recent Pairings</div>
+    <div class="pairing-header">
+        <span>Player 1</span>
+        <span>Player 2</span>
+        <span>Rating 1</span>
+        <span>Rating 2</span>
+        <span>Elo Diff</span>
+        <span>Region</span>
+    </div>
+    <div id="pairings-list"></div>
+</div>
+
+<script>
+    const eloData = [];
+    const timeLabels = [];
+    const MAX_POINTS = 60;
+    const MAX_PAIRINGS = 20;
+
+    const ctx = document.getElementById('elo-chart').getContext('2d');
+    const eloChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: timeLabels,
+            datasets: [{
+                data: eloData,
+                borderColor: '#00b4d8',
+                backgroundColor: 'rgba(0, 180, 216, 0.08)',
+                borderWidth: 1.5,
+                pointRadius: 0,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { display: false },
+                y: {
+                    grid: { color: 'rgba(30, 58, 95, 0.5)' },
+                    ticks: { color: '#4d6380', font: { family: 'JetBrains Mono', size: 10 } },
+                    border: { color: 'rgba(30, 58, 95, 0.5)' }
+                }
+            }
+        }
+    });
+
+    function flash(id) {
+        const el = document.getElementById(id);
+        el.classList.add('flash');
+        setTimeout(() => el.classList.remove('flash'), 300);
+    }
+
+    function updateCards(data) {
+        document.getElementById('total-matches').textContent = data['total matches'];
+        document.getElementById('matches-sec').textContent = data['matches per second'].toFixed(2);
+        document.getElementById('avg-elo').textContent = data['avg elo diff'].toFixed(1);
+        document.getElementById('avg-wait').textContent = data['avg waittime'].toFixed(1);
+        ['total-matches', 'matches-sec', 'avg-elo', 'avg-wait'].forEach(flash);
+    }
+
+    function updateTable(regions) {
+        const tbody = document.getElementById('region-table');
+        tbody.innerHTML = '';
+        for (const [region, depth] of Object.entries(regions)) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${region}</td><td>${depth}</td>`;
+            tbody.appendChild(tr);
+        }
+    }
+
+    function updateChart(avgElo) {
+        timeLabels.push(new Date().toLocaleTimeString());
+        eloData.push(avgElo);
+        if (eloData.length > MAX_POINTS) { eloData.shift(); timeLabels.shift(); }
+        eloChart.update();
+    }
+
+    function updatePairings(matches) {
+        if (!matches || matches.length === 0) return;
+        const list = document.getElementById('pairings-list');
+        matches.slice(-5).reverse().forEach(match => {
+            const row = document.createElement('div');
+            row.className = 'pairing-row';
+            row.innerHTML = `
+                <span>${match.player1}</span>
+                <span>${match.player2}</span>
+                <span>${parseFloat(match.player1_rating).toFixed(0)}</span>
+                <span>${parseFloat(match.player2_rating).toFixed(0)}</span>
+                <span>${parseFloat(match.ELO_Diff).toFixed(1)}</span>
+                <span><div class="pill">${match.Region}</div></span>
+            `;
+            list.prepend(row);
+        });
+        while (list.children.length > MAX_PAIRINGS) list.removeChild(list.lastChild);
+    }
+
+    const ws = new WebSocket('ws://127.0.0.1:8000/ws');
+    ws.onopen = () => document.getElementById('status').textContent = 'live';
+    ws.onclose = () => document.getElementById('status').textContent = 'disconnected';
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        updateCards(data);
+        updateTable(data['queue depth per region']);
+        updateChart(data['avg elo diff']);
+        updatePairings(data['recent matches']);
+    };
+</script>
+
+</body>
+</html>

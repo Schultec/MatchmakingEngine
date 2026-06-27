@@ -1,9 +1,11 @@
 import asyncio
 import random
-import time
+import uvicorn
+from Dashboard import dashboard
 from Engine.metrics import MetricsAggregator
 from Engine.matchmaker import matchmaker_loop
 from Engine.models import Player
+from Engine.queue_manager import QueueManager
 
 
 async def player_spawner(active_queue):
@@ -40,18 +42,19 @@ async def player_spawner(active_queue):
         await asyncio.sleep(random_sleep_duration)
 
 
-from Engine.queue_manager import QueueManager
-
-
 async def run_simulation():
     # 1. Create the SINGLE shared instance of your waiting room
     shared_server_queue = QueueManager()
     metrics = MetricsAggregator()
+    dashboard.app.state.metrics = metrics
+    config = uvicorn.Config(dashboard.app, host="127.0.0.1", port=8000)
+    server = uvicorn.Server(config)
 
     # 2. Tell Python to run the producer and consumer at the exact same time
     await asyncio.gather(
         player_spawner(shared_server_queue),
-        matchmaker_loop(shared_server_queue, metrics)
+        matchmaker_loop(shared_server_queue, metrics),
+        server.serve()
     )
 
 

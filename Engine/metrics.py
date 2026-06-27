@@ -20,7 +20,7 @@ class MetricsAggregator:
             "ELO_Diff": abs(ticket1.player.rating - ticket2.player.rating),
             "player1_waittime": curr - ticket1.created_at,
             "player2_waittime": curr - ticket2.created_at,
-            "timestamp": curr
+            "timestamp": curr,
         }
         self.match_history.append(match_hist_entry)
         self.match_count += 1
@@ -48,5 +48,6 @@ class MetricsAggregator:
             "avg elo diff": result_elo,
             "avg waittime": result_waittime,
             "queue depth per region": self.queue_snapshots,
-            "total matches": self.match_count
+            "total matches": self.match_count,
+            "recent matches": list(self.match_history)[-20:]
         }
