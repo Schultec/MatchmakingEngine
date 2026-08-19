@@ -183,6 +183,38 @@
             border: 1px solid rgba(0, 180, 216, 0.2);
             display: inline-block;
         }
+
+        .peak-btn {
+            margin-left: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .peak-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .peak-btn.active { background: rgba(255, 160, 0, 0.1); color: #ffa000; border-color: #ffa000; }
+
+        .peak-banner {
+            display: none;
+            background: rgba(255, 160, 0, 0.08);
+            border: 1px solid #ffa000;
+            color: #ffa000;
+            font-size: 11px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            text-align: center;
+            padding: 8px;
+            margin-bottom: 16px;
+        }
+
+        .peak-banner.visible { display: block; }
     </style>
 </head>
 <body>
@@ -191,7 +223,10 @@
     <div class="live-dot"></div>
     <h1><span>MATCHMAKING</span> ENGINE MONITOR</h1>
     <div class="connection-status" id="status">connecting...</div>
+    <button class="peak-btn" id="peak-btn" onclick="togglePeak()">Peak Hours</button>
 </header>
+
+<div class="peak-banner" id="peak-banner">Peak Hours Active - 5x Traffic</div>
 
 <div class="cards">
     <div class="card">
@@ -235,12 +270,12 @@
 </div>
 
 <div class="pairings">
-    <div class="panel-title">Recent Pairings</div>
+    <div class="panel-title">Recent Matches</div>
     <div class="pairing-header">
-        <span>Player 1</span>
-        <span>Player 2</span>
-        <span>Rating 1</span>
-        <span>Rating 2</span>
+        <span>Team 1</span>
+        <span>Team 2</span>
+        <span>Avg Rating 1</span>
+        <span>Avg Rating 2</span>
         <span>Elo Diff</span>
         <span>Region</span>
     </div>
@@ -322,11 +357,11 @@
             const row = document.createElement('div');
             row.className = 'pairing-row';
             row.innerHTML = `
-                <span>${match.player1}</span>
-                <span>${match.player2}</span>
-                <span>${parseFloat(match.player1_rating).toFixed(0)}</span>
-                <span>${parseFloat(match.player2_rating).toFixed(0)}</span>
-                <span>${parseFloat(match.ELO_Diff).toFixed(1)}</span>
+                <span title="${match.team1_players.join(', ')}">${match.team1_players.length} players</span>
+                <span title="${match.team2_players.join(', ')}">${match.team2_players.length} players</span>
+                <span>${match.team1_rating}</span>
+                <span>${match.team2_rating}</span>
+                <span>${match.ELO_Diff}</span>
                 <span><div class="pill">${match.Region}</div></span>
             `;
             list.prepend(row);
@@ -343,7 +378,14 @@
         updateTable(data['queue depth per region']);
         updateChart(data['avg elo diff']);
         updatePairings(data['recent matches']);
+        const isPeak = data['is_peak'];
+        document.getElementById('peak-banner').classList.toggle('visible', isPeak);
+        document.getElementById('peak-btn').classList.toggle('active', isPeak);
     };
+
+    function togglePeak() {
+        ws.send('Toggle_Peak');
+    }
 </script>
 
 </body>

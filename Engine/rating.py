@@ -1,4 +1,4 @@
-from Engine.models import Player
+from Engine import models
 
 class EloEngine:
     def __init__(self, k_factor: int = 32):
@@ -12,10 +12,11 @@ class EloEngine:
         calculate the likelihood of a player winning a match
         """
         exponent = (opponent_rating - player_rating) / 400
+        exponent = max(-12, min(12, int(exponent)))
         dem = 1 + 10 ** exponent
         return 1 / dem
 
-    def update_ratings(self, player_a: Player, expected_outcome: float, outcome: float):
+    def update_ratings(self, player_a: models.Player, expected_outcome: float, outcome: float):
         """
         :param player_a:
         :param expected_outcome:

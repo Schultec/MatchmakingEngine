@@ -4,11 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1c3bbf06-bbb6-400a-a012-97b14e681e1a" name="Changes" comment="Initial commit">
-      <change afterPath="$PROJECT_DIR$/Dashboard/dashboard.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dashboard/index.html" afterDir="false" />
+    <list default="true" id="1c3bbf06-bbb6-400a-a012-97b14e681e1a" name="Changes" comment="added dashboard">
+      <change afterPath="$PROJECT_DIR$/sim_state.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dashboard/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard/dashboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dashboard/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/matchmaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/matchmaker.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Engine/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/queue_manager.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/queue_manager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/rating.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/rating.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -26,18 +31,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Schultec"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Schultec&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Schultec/MatchmakingEngine.git",
-    "accountId": "de2831ba-7f60-4e0e-ade1-c46734af5109"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Schultec/MatchmakingEngine.git&quot;,
+    &quot;accountId&quot;: &quot;de2831ba-7f60-4e0e-ade1-c46734af5109&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 8
 }</component>
@@ -50,6 +55,7 @@
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "Python.main.executor": "Run",
+    "Python.metrics.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
@@ -81,7 +87,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782517210017</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="added dashboard">
+      <option name="closed" value="true" />
+      <created>1782519414974</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1782519414974</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -97,6 +111,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit" />
+    <MESSAGE value="added dashboard" />
+    <option name="LAST_COMMIT_MESSAGE" value="added dashboard" />
   </component>
 </project>

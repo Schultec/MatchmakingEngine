@@ -31,3 +31,18 @@ class Ticket:
         exponent = (-0.3 * (seconds_elapsed-10))
         calculated_gap = 300/(1+math.e ** exponent)
         return calculated_gap
+
+class Team:
+    def __init__ (self, players: list[Ticket]):
+        self.players = players
+
+    @property
+    def average_rating(self) -> float:
+        total_rating = 0
+        for ticket in self.players:
+            total_rating += ticket.player.rating
+        return total_rating / len(self.players)
+
+    @property
+    def allowed_gap(self) -> float:
+        return min(ticket.allowed_gap for ticket in self.players)
