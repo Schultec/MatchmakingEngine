@@ -39,6 +39,7 @@ class QueueManager:
             self.active_tickets[region_name][bucket] = {}
 
         self.active_tickets[region_name][bucket][ticket.player.id] = ticket
+        self.player_to_bucket[ticket.player.id] = bucket
         self._total_players += 1
         return True
 
@@ -52,9 +53,8 @@ class QueueManager:
 
         bucket_id =  self.player_to_bucket[player_id]
 
-        if bucket_id in self.active_tickets[player_region][bucket_id]:
-            if player_id in self.active_tickets[player_region][bucket_id]:
-                del self.active_tickets[player_region][self.player_to_bucket[player_id]][player_id]
+        if player_id in self.active_tickets[player_region][bucket_id]:
+            del self.active_tickets[player_region][bucket_id][player_id]
 
         del self.player_to_bucket[player_id]
         self._total_players -= 1

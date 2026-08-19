@@ -12,7 +12,7 @@ class EloEngine:
         calculate the likelihood of a player winning a match
         """
         exponent = (opponent_rating - player_rating) / 400
-        exponent = max(-12, min(12, int(exponent)))
+        exponent = max(-12.0, min(12.0, exponent))
         dem = 1 + 10 ** exponent
         return 1 / dem
 

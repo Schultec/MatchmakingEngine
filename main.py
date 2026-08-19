@@ -29,7 +29,7 @@ async def player_spawner(active_queue, sim_state: SimState):
         current_load = active_queue.get_total_players()
 
         if current_load < max_concurrent:
-            batch = 150 if sim_state.is_peak else 30
+            batch = 1500 if sim_state.is_peak else 500
             for i in range(batch) :
                 # 1. Create a unique ID
                 player_id = f"Player_{player_counter}"
@@ -46,7 +46,7 @@ async def player_spawner(active_queue, sim_state: SimState):
                     player_counter += 1
 
         # 5. Sleep for a random interval (0.001 to 0.4 seconds) to mimic organic traffic
-        random_sleep_duration = random.uniform(0.05, 0.1)
+        random_sleep_duration = random.uniform(0.001, 0.4)
         await asyncio.sleep(random_sleep_duration)
 
 async def match_simulation_worker(match_buffer: list, active_queue: QueueManager):
@@ -67,7 +67,7 @@ async def match_simulation_worker(match_buffer: list, active_queue: QueueManager
                     team_a.average_rating,
                     team_b.average_rating,
                 )
-                expected_score_b = 1.0 - team_a.average_rating
+                expected_score_b = 1.0 - expected_score_a
                 a_won = random.random() < expected_score_a
                 outcome_a, outcome_b = (1.0, 0.0) if a_won else (0.0, 1.0)
 
