@@ -168,7 +168,33 @@
             letter-spacing: 0.1em;
         }
 
-        .pairing-row { animation: slideIn 0.3s ease; }
+        .pairing-row { animation: slideIn 0.3s ease; cursor: pointer; }
+        .pairing-row:hover { background: rgba(0, 180, 216, 0.05); }
+
+        .roster-detail {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            padding: 10px 12px 14px;
+            background: rgba(0, 180, 216, 0.03);
+            border-bottom: 1px solid rgba(30, 58, 95, 0.4);
+            animation: slideIn 0.2s ease;
+        }
+        .roster-detail.expanded { display: grid; }
+
+        .roster-col-title {
+            font-size: 9px;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .roster-player {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            padding: 3px 0;
+        }
+        .roster-player .rating { color: var(--accent); }
 
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-4px); }
@@ -350,6 +376,17 @@
         eloChart.update();
     }
 
+    function rosterColumn(title, players) {
+        const sorted = [...players].sort((a, b) => b.rating - a.rating);
+        const rows = sorted.map(p => `
+            <div class="roster-player">
+                <span>${p.id}</span>
+                <span class="rating">${p.rating}</span>
+            </div>
+        `).join('');
+        return `<div><div class="roster-col-title">${title}</div>${rows}</div>`;
+    }
+
     function updatePairings(matches) {
         if (!matches || matches.length === 0) return;
         const list = document.getElementById('pairings-list');
@@ -357,16 +394,29 @@
             const row = document.createElement('div');
             row.className = 'pairing-row';
             row.innerHTML = `
-                <span title="${match.team1_players.join(', ')}">${match.team1_players.length} players</span>
-                <span title="${match.team2_players.join(', ')}">${match.team2_players.length} players</span>
+                <span>${match.team1_players.length} players</span>
+                <span>${match.team2_players.length} players</span>
                 <span>${match.team1_rating}</span>
                 <span>${match.team2_rating}</span>
                 <span>${match.ELO_Diff}</span>
                 <span><div class="pill">${match.Region}</div></span>
             `;
+
+            const detail = document.createElement('div');
+            detail.className = 'roster-detail';
+            detail.innerHTML =
+                rosterColumn('Team 1', match.team1_players) +
+                rosterColumn('Team 2', match.team2_players);
+
+            row.addEventListener('click', () => detail.classList.toggle('expanded'));
+
+            list.prepend(detail);
             list.prepend(row);
         });
-        while (list.children.length > MAX_PAIRINGS) list.removeChild(list.lastChild);
+        while (list.children.length > MAX_PAIRINGS * 2) {
+            list.removeChild(list.lastChild);
+            list.removeChild(list.lastChild);
+        }
     }
 
     const ws = new WebSocket('ws://127.0.0.1:8000/ws');

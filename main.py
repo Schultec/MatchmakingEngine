@@ -21,7 +21,7 @@ async def player_spawner(active_queue, sim_state: SimState):
     AVERAGE_ELO = 1500.0
     SKILL_SPREAD = 200.0  # 68% of players will be between 1300 and 1700 Elo
 
-    max_concurrent = 15000
+    max_concurrent = 50000
 
     print("[SIMULATOR] Player spawner started...")
 
@@ -44,6 +44,9 @@ async def player_spawner(active_queue, sim_state: SimState):
 
                 if success:
                     player_counter += 1
+        else :
+            print("[SIMULATOR] Player spawner ended...")
+            break
 
         # 5. Sleep for a random interval (0.001 to 0.4 seconds) to mimic organic traffic
         random_sleep_duration = random.uniform(0.001, 0.4)

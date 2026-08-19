@@ -9,6 +9,10 @@ app = FastAPI()
 def serve_dashboard():
     return FileResponse("Dashboard/index.html")
 
+@app.get("/storylines")
+def serve_storylines():
+    return FileResponse("Dashboard/storylines.html")
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()

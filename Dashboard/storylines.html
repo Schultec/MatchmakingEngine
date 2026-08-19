@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storylines — Matchmaking Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0f1c;
+            --surface: #0f1929;
+            --border: #1e3a5f;
+            --accent: #00b4d8;
+            --accent-glow: rgba(0, 180, 216, 0.12);
+            --text: #cdd9e5;
+            --text-muted: #4d6380;
+            --fire: #ff6b35;
+            --fire-glow: rgba(255, 107, 53, 0.12);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.4); }
+            50% { opacity: 0.5; box-shadow: 0 0 0 6px rgba(0, 180, 216, 0); }
+        }
+
+        h1 {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        h1 span { color: var(--accent); }
+
+        .connection-status {
+            margin-left: auto;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .nav-link {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 6px 16px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover { border-color: var(--accent); color: var(--accent); }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .panel-title {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .rivalry-header, .rivalry-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 40px 1fr 100px;
+            gap: 8px;
+            padding: 10px 0;
+            font-size: 12px;
+            align-items: center;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.4);
+        }
+
+        .rivalry-header {
+            font-size: 10px;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .rivalry-row { animation: slideIn 0.3s ease; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .rank {
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .vs {
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 10px;
+        }
+
+        .meetings-pill {
+            font-size: 10px;
+            padding: 3px 10px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(0, 180, 216, 0.2);
+            display: inline-block;
+            text-align: center;
+        }
+
+        .meetings-pill.hot {
+            background: var(--fire-glow);
+            color: var(--fire);
+            border-color: rgba(255, 107, 53, 0.3);
+        }
+
+        .empty-state {
+            color: var(--text-muted);
+            font-size: 12px;
+            padding: 24px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="live-dot"></div>
+    <h1><span>STORY</span>LINES</h1>
+    <div class="connection-status" id="status">connecting...</div>
+    <a class="nav-link" href="/">← Dashboard</a>
+</header>
+
+<div class="panel">
+    <div class="panel-title">Top Rivalries — Most Frequent Opponents</div>
+    <div class="rivalry-header">
+        <span>#</span>
+        <span>Player</span>
+        <span></span>
+        <span>Player</span>
+        <span>Meetings</span>
+    </div>
+    <div id="rivalries-list"></div>
+    <div class="empty-state" id="rivalries-empty">No repeat matchups yet — check back once more matches complete.</div>
+</div>
+
+<script>
+    const HOT_THRESHOLD = 3; // meetings count at/above which a rivalry gets the "hot" styling
+
+    function updateRivalries(rivalries) {
+        const list = document.getElementById('rivalries-list');
+        const empty = document.getElementById('rivalries-empty');
+
+        if (!rivalries || rivalries.length === 0) {
+            list.innerHTML = '';
+            empty.style.display = 'block';
+            return;
+        }
+        empty.style.display = 'none';
+
+        list.innerHTML = rivalries.map((r, i) => {
+            const [playerA, playerB] = r.players;
+            const hot = r.meetings >= HOT_THRESHOLD ? 'hot' : '';
+            return `
+                <div class="rivalry-row">
+                    <span class="rank">#${i + 1}</span>
+                    <span>${playerA}</span>
+                    <span class="vs">vs</span>
+                    <span>${playerB}</span>
+                    <span><div class="meetings-pill ${hot}">${r.meetings} meetings</div></span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    const ws = new WebSocket('ws://127.0.0.1:8000/ws');
+    ws.onopen = () => document.getElementById('status').textContent = 'live';
+    ws.onclose = () => document.getElementById('status').textContent = 'disconnected';
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        updateRivalries(data['top rivalries']);
+    };
+</script>
+
+</body>
+</html>

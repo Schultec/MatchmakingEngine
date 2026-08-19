@@ -4,9 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1c3bbf06-bbb6-400a-a012-97b14e681e1a" name="Changes" comment="fix some small errors">
+    <list default="true" id="1c3bbf06-bbb6-400a-a012-97b14e681e1a" name="Changes" comment="fix bug resulting in lost players from queue">
+      <change afterPath="$PROJECT_DIR$/Dashboard/storylines.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Engine/matchmaker.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/matchmaker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dashboard/dashboard.py" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard/dashboard.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dashboard/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Dashboard/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Engine/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/Engine/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +21,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -43,19 +48,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.metrics.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.main.executor": "Run",
+    "Python.matchmaker.executor": "Run",
+    "Python.metrics.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "master",
+    "junie.onboarding.icon.badge.shown": "true",
+    "to.speed.mode.migration.done": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -103,7 +110,15 @@
       <option name="project" value="LOCAL" />
       <updated>1787106529729</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fix bug resulting in lost players from queue">
+      <option name="closed" value="true" />
+      <created>1787107409520</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1787107409520</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -122,6 +137,7 @@
     <MESSAGE value="added dashboard" />
     <MESSAGE value="cross region matching" />
     <MESSAGE value="fix some small errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix some small errors" />
+    <MESSAGE value="fix bug resulting in lost players from queue" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix bug resulting in lost players from queue" />
   </component>
 </project>
