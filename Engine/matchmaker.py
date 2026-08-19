@@ -20,12 +20,14 @@ async def matchmaker_loop(active_queue, metrics: MetricsAggregator, active_match
     while True:
         curr = time.time()
 
+        claimed_this_tick = set()
+
         for region in regions:
             teams = []
             queue = active_queue.get_active_tickets(region)
             depth = sum(len(bucket) for bucket in queue.values())
             metrics.record_snapshot(region, depth)
-            matched_ids = set()
+            matched_ids = claimed_this_tick
             for bucket in queue.values():
                 for ticket in sorted(list(bucket.values()), key=lambda t: t.created_at):
                     if ticket.player.id in matched_ids:
@@ -54,9 +56,6 @@ async def matchmaker_loop(active_queue, metrics: MetricsAggregator, active_match
                     if len(teammates) >= 4:
                         teams.append(Team([ticket] + teammates[:4]))
                         matched_ids.add(ticket.player.id)
-                        active_queue.remove_from_queue(ticket.player.id, ticket.player.region.name)
-                        for item in teammates:
-                            active_queue.remove_from_queue(item.player.id, item.player.region.name)
                         break
             matched_teams = set()
             sorted_teams = sorted(teams, key=lambda t: t.average_rating)
@@ -75,6 +74,8 @@ async def matchmaker_loop(active_queue, metrics: MetricsAggregator, active_match
                         metrics.record_match(region, team, opponent, curr)
 
                         active_matches_buffer.append((team, opponent, time.time()))
+                        for t in team.players + opponent.players:
+                            active_queue.remove_from_queue(t.player.id, t.player.region.name)
                         break
 
 
